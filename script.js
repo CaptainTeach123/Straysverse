@@ -13,11 +13,8 @@
   const whisperEl = document.querySelector(".whisper");
 
   const passage =
-    "They call us the Strays — the moon-touched, the wandering.\n" +
-    "When the pale lantern swells full above the moor,\n" +
-    "the old blood stirs, and gentle men recall their teeth.\n" +
-    "Bar your door, dear reader. Draw the curtains close.\n" +
-    "For tonight the pack is running, and the night is ours.";
+    "When the pale lantern swells,\n" +
+    "the old blood stirs.";
 
   /* ================= Fog canvas ================= */
   const fogCanvas = document.getElementById("fog");
