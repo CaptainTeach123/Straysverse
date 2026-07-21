@@ -188,10 +188,11 @@
     gate.classList.add("hidden");
     stage.classList.add("revealed");
 
-    setTimeout(() => book.classList.add("open"), 1200);
+    // hold on the closed werewolf cover so it's clearly seen, THEN open it
+    setTimeout(() => book.classList.add("open"), 2400);
 
     // the passage writes itself once the cover has swung wide
-    setTimeout(() => typePassage(passage, 55), 3400);
+    setTimeout(() => typePassage(passage, 55), 4700);
   }
 
   enterBtn.addEventListener("click", enter);

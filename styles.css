@@ -31,17 +31,9 @@ html, body {
 /* ---------- Moon-over-forest backdrop ---------- */
 .night-sky {
   position: fixed; inset: 0; z-index: 1;
-  /* show the WHOLE image; its black border blends into the black letterbox */
-  background: #030204 url("assets/moonforest.jpg") center center / contain no-repeat;
+  /* landscape artwork fills the whole page */
+  background: #030204 url("assets/moonforest.jpg") center center / cover no-repeat;
 }
-/* gentle breathing glow so the moon feels alive */
-.night-sky::after {
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 40%, rgba(235,220,170,0.1) 0%, transparent 30%);
-  mix-blend-mode: screen;
-  animation: moon-breathe 8s ease-in-out infinite;
-}
-@keyframes moon-breathe { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
 
 /* ---------- Ambient overlays ---------- */
 .vignette {
@@ -64,26 +56,6 @@ html, body {
   100% { transform: translate(4px, -3px); }
 }
 
-/* ---------- Victorian gilt border frame ---------- */
-.frame {
-  position: fixed; inset: 16px; pointer-events: none; z-index: 52;
-  border: 1px solid rgba(200,169,90,0.24);
-  box-shadow: inset 0 0 24px rgba(0,0,0,0.5);
-}
-.frame::before {
-  content: ""; position: absolute; inset: 5px;
-  border: 1px solid rgba(200,169,90,0.13);
-}
-.frame .corner {
-  position: absolute; font-size: 20px; line-height: 1;
-  color: rgba(210,178,96,0.55);
-  text-shadow: 0 0 8px rgba(200,169,90,0.4);
-}
-.frame .tl { top: -11px; left: -11px; }
-.frame .tr { top: -11px; right: -11px; }
-.frame .bl { bottom: -13px; left: -11px; }
-.frame .br { bottom: -13px; right: -11px; }
-@media (max-width: 600px) { .frame { inset: 9px; } .frame .corner { font-size: 15px; } }
 .dust {
   position: fixed; inset: 0; pointer-events: none; z-index: 6;
   background-image:
@@ -210,12 +182,29 @@ html, body {
 @media (max-width: 900px) {
   .book.open { transform: translateX(50%) rotateX(6deg) scale(1.0); }
 }
-@media (max-width: 720px) {
-  .book { width: 66vw; height: 56vh; }
-  .book.open { transform: translateX(50%) rotateX(4deg) scale(0.92); }
+
+/* Mobile: open to the single text page only (the spread is too small) */
+@media (max-width: 760px) {
+  .book {
+    width: min(88vw, 460px);
+    height: min(80vh, 700px);
+    transform: rotateX(4deg) scale(0.88);
+  }
+  /* no sideways shift — the text page stays centered */
+  .book.open { transform: rotateX(2deg) scale(1); }
+  /* the leather left page is not shown on mobile */
+  .left-page { display: none; }
+  /* the cover swings open and fades, leaving just the text page */
+  .book.open .cover {
+    opacity: 0;
+    transition: transform 1.7s cubic-bezier(.4,.1,.2,1), opacity 0.6s ease 1.25s;
+  }
+  .page-content { padding: 9% 16% 9% 12%; }
+  .incantation { font-size: 0.98rem; line-height: 1.72; }
+  .whisper { font-size: 0.82rem; }
 }
 
-.cover, .page, .left-page, .right-page {
+.cover, .left-page, .right-page {
   position: absolute; inset: 0;
   transform-style: preserve-3d;
 }
@@ -248,34 +237,20 @@ html, body {
 }
 .right-page .page-sheet::before,
 .right-page .page-sheet::after { content: none; }
+/* Left page is hidden behind the flipped cover; keep it dark leather so no
+   bright sliver can peek through the gutter at the top/bottom */
+.left-page .page-sheet {
+  background: #0d0906 url("assets/bookspread.jpg") left center / 200% 100% no-repeat;
+}
+.left-page .page-sheet::before,
+.left-page .page-sheet::after { content: none; }
+.left-decor { display: none; }
 
 /* Left page */
-.left-page {
-  transform-origin: right center;
-  transform: translateX(-100%);
-  border-radius: 4px 1px 1px 4px;
-  overflow: hidden;
-  box-shadow: inset -22px 0 32px rgba(60,40,15,0.35);
-}
-.left-decor {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8%;
-}
-.sigil {
-  font-size: clamp(2.4rem, 9vw, 5rem);
-  color: rgba(120,95,40,0.6);
-  text-shadow: 0 0 14px rgba(200,169,90,0.35);
-  animation: sigil-pulse 6s ease-in-out infinite;
-}
-@keyframes sigil-pulse {
-  0%,100% { opacity: 0.6; transform: scale(1) rotate(0deg); }
-  50% { opacity: 0.9; transform: scale(1.05) rotate(-4deg); }
-}
-.left-lines { width: 62%; display: flex; flex-direction: column; gap: 10px; }
-.left-lines span { height: 2px; background: linear-gradient(90deg, rgba(70,50,20,0.4), rgba(70,50,20,0.05)); }
-.left-lines span:nth-child(4n) { width: 70%; }
-.left-lines span:nth-child(3n) { width: 88%; }
+/* The inside-cover leather is provided by the cover's back face when it
+   flips open, so this separate panel is not needed (and would otherwise
+   stick out to the left of the closed cover). */
+.left-page { display: none; }
 
 /* Right page (the passage) */
 .right-page {
@@ -322,29 +297,6 @@ html, body {
 }
 .whisper.show { opacity: 0.9; }
 
-/* Turning pages */
-.page {
-  transform-origin: left center;
-  transform: rotateY(0deg);
-  border-radius: 1px 4px 4px 1px;
-  transition: transform 1.6s ease;
-  will-change: transform;
-}
-.page-face {
-  position: absolute; inset: 0;
-  border-radius: 1px 4px 4px 1px;
-  backface-visibility: hidden;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse at 12% 50%, rgba(0,0,0,0.2), transparent 55%),
-    linear-gradient(135deg, #e5d6b6 0%, #cbb98f 100%);
-  box-shadow: inset 16px 0 26px rgba(60,40,15,0.28);
-}
-.page-face.back { transform: rotateY(180deg); }
-.page-1 { z-index: 3; }
-.page-2 { z-index: 2; }
-.book.open .page-1 { transform: rotateY(-174deg); transition-delay: 0.55s; }
-.book.open .page-2 { transform: rotateY(-171deg); transition-delay: 0.4s; }
 
 /* Front cover */
 .cover {
