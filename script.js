@@ -267,8 +267,8 @@
       seqStart = performance.now();
       playNarration();
       const firstStroke = D - STROKE - 2 * STAG;        // when strokes begin
-      // finish the typing ~2s sooner so the text reads a touch faster
-      const typeEnd = Math.max(1.2, firstStroke - 2.35);
+      // finish the typing ~2.5s sooner so the text reads a touch faster
+      const typeEnd = Math.max(1.2, firstStroke - 2.85);
       typePaced(typeEnd * 1000, () => drawUnderlinesSynced(D));
     };
     if (isFinite(narration.duration) && narration.duration > 0.5) go();
