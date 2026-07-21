@@ -3,30 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Forbidden Tome</title>
+  <title>The Strays</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Nosifer&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Night sky + moon behind everything -->
+  <div class="night-sky"></div>
+  <div class="moon" aria-hidden="true">
+    <div class="moon-glow"></div>
+    <div class="moon-face"></div>
+  </div>
+
   <!-- Ambient overlays -->
   <div class="vignette"></div>
-  <div class="fog"></div>
   <div class="dust"></div>
-  <div class="flicker"></div>
 
-  <!-- Sound toggle -->
-  <button id="soundToggle" class="sound-toggle" aria-label="Toggle ambient sound" title="Toggle ambient sound">
-    <span class="sound-icon">🔇</span>
-  </button>
+  <!-- Fog blows through the whole page -->
+  <canvas id="fog" aria-hidden="true"></canvas>
+
+  <!-- Victorian navigation with decorative flourishes -->
+  <nav class="topnav" id="topnav">
+    <svg class="flourish flourish-l" viewBox="0 0 240 40" aria-hidden="true">
+      <use href="#filigree" />
+    </svg>
+    <ul class="nav-links">
+      <li><button class="nav-btn" data-howl type="button">Howl</button></li>
+      <li class="nav-fleuron">&#10086;</li>
+      <li><button class="nav-btn" id="soundToggle" type="button" aria-pressed="false">Ambience <span class="sound-state">off</span></button></li>
+    </ul>
+    <svg class="flourish flourish-r" viewBox="0 0 240 40" aria-hidden="true">
+      <use href="#filigree" />
+    </svg>
+  </nav>
 
   <!-- Enter gate -->
   <div id="gate" class="gate">
     <div class="gate-inner">
-      <h1 class="gate-title">The Forbidden Tome</h1>
-      <p class="gate-sub">Some books were never meant to be opened.</p>
-      <button id="enterBtn" class="enter-btn">Enter</button>
-      <p class="gate-warn">Turn back while you still can&hellip;</p>
+      <p class="gate-crest">&#10087;&nbsp; MDCCCXCI &nbsp;&#10087;</p>
+      <h1 class="gate-title">The Strays</h1>
+      <svg class="flourish flourish-divider" viewBox="0 0 240 40" aria-hidden="true">
+        <use href="#filigree" />
+      </svg>
+      <p class="gate-sub">A midnight chronicle of the moon&#8209;touched.</p>
+      <button id="enterBtn" class="enter-btn" type="button">Enter</button>
+      <p class="gate-warn">Come in from the cold, and mind the moon&hellip;</p>
     </div>
   </div>
 
@@ -37,7 +60,7 @@
       <div class="left-page">
         <div class="page-sheet">
           <div class="left-decor">
-            <div class="sigil">&#10021;</div>
+            <div class="sigil">&#9790;</div>
             <div class="left-lines">
               <span></span><span></span><span></span><span></span>
               <span></span><span></span><span></span><span></span>
@@ -46,12 +69,12 @@
         </div>
       </div>
 
-      <!-- Right page: the incantation is revealed here -->
+      <!-- Right page: the passage is revealed here -->
       <div class="right-page">
         <div class="page-sheet">
           <div class="page-content">
             <p class="incantation" id="incantation"></p>
-            <p class="whisper">&mdash; written in something darker than ink</p>
+            <p class="whisper">&mdash; from the diaries of the pack</p>
           </div>
         </div>
       </div>
@@ -64,21 +87,72 @@
       <div class="cover" id="cover">
         <div class="cover-face cover-front">
           <div class="cover-frame">
+            <div class="cover-corner c-tl"></div>
+            <div class="cover-corner c-tr"></div>
+            <div class="cover-corner c-bl"></div>
+            <div class="cover-corner c-br"></div>
             <div class="cover-emblem">
-              <div class="eye">
-                <div class="eye-lid"></div>
-                <div class="pupil"></div>
-              </div>
+              <svg viewBox="0 0 120 120" class="emblem-art" aria-hidden="true">
+                <defs>
+                  <radialGradient id="moonDisc" cx="42%" cy="38%" r="70%">
+                    <stop offset="0%" stop-color="#f6efd8" />
+                    <stop offset="60%" stop-color="#d9caa0" />
+                    <stop offset="100%" stop-color="#a89563" />
+                  </radialGradient>
+                </defs>
+                <circle cx="58" cy="50" r="35" fill="url(#moonDisc)" />
+                <circle cx="48" cy="42" r="5" fill="#00000018" />
+                <circle cx="68" cy="56" r="7" fill="#00000015" />
+                <circle cx="60" cy="38" r="3" fill="#0000000f" />
+                <!-- howling wolf on a hill, silhouetted against the moon -->
+                <path class="wolf-hill" d="M12 100 C 34 82, 52 84, 62 90 C 74 84, 92 86, 108 100 L 108 112 L 12 112 Z" fill="#140e08" />
+                <path class="wolf" d="M63 90
+                  C 67 84, 66 79, 63 76
+                  C 66 74, 65 69, 61 68
+                  C 64 65, 62 61, 58 62
+                  C 60 58, 57 55, 54 57
+                  C 52 52, 55 48, 53 44
+                  C 51 47, 50 51, 51 55
+                  C 49 57, 49 60, 51 62
+                  C 48 64, 48 68, 51 71
+                  C 49 74, 49 79, 52 84
+                  C 51 87, 51 89, 52 91
+                  C 55 90, 59 90, 63 90 Z" fill="#140e08" />
+                <path class="wolf" d="M64 88 C 71 85, 75 89, 71 93 C 69 90, 66 89, 63 89 Z" fill="#140e08" />
+              </svg>
             </div>
-            <h2 class="cover-title">Necronomicon</h2>
-            <p class="cover-sub">of the Sleepless Dark</p>
-            <div class="cover-runes">&#10022; &#10038; &#9763; &#10038; &#10022;</div>
+            <h2 class="cover-title">The Strays</h2>
+            <p class="cover-sub">A Chronicle of the Moonstruck</p>
+            <div class="cover-runes">&#10086;&ensp;&#9906;&ensp;&#10087;</div>
           </div>
         </div>
         <div class="cover-face cover-back"></div>
       </div>
     </div>
   </div>
+
+  <!-- Reusable Victorian filigree flourish -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#8a6d2f" />
+        <stop offset="50%" stop-color="#e6c877" />
+        <stop offset="100%" stop-color="#8a6d2f" />
+      </linearGradient>
+      <g id="filigree" fill="none" stroke="url(#goldGrad)" stroke-width="1.6" stroke-linecap="round">
+        <path d="M120 20 C 104 9, 84 9, 72 20 C 64 28, 52 28, 46 20" />
+        <path d="M120 20 C 136 9, 156 9, 168 20 C 176 28, 188 28, 194 20" />
+        <path d="M46 20 C 40 14, 30 15, 30 22 C 30 27, 36 28, 39 24" />
+        <path d="M194 20 C 200 14, 210 15, 210 22 C 210 27, 204 28, 201 24" />
+        <path d="M72 20 c 3 -7 11 -8 14 -2" />
+        <path d="M168 20 c -3 -7 -11 -8 -14 -2" />
+        <circle cx="120" cy="20" r="3.4" fill="url(#goldGrad)" stroke="none" />
+        <path d="M113 20 h14" stroke-width="1" />
+        <circle cx="30" cy="22" r="1.7" fill="url(#goldGrad)" stroke="none" />
+        <circle cx="210" cy="22" r="1.7" fill="url(#goldGrad)" stroke="none" />
+      </g>
+    </defs>
+  </svg>
 
   <script src="script.js"></script>
 </body>

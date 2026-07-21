@@ -1,26 +1,36 @@
-# The Forbidden Tome
+# The Strays
 
-A creepy single-page website featuring an ancient, cursed-looking book that
-opens the moment you enter.
+A moonlit, Victorian-styled single-page site for *The Strays* — a chronicle of
+the moon-touched. An ancient book falls open the moment you enter, beneath a
+full moon with fog rolling across the night.
 
 ## What it does
 
-- **The gate** — a dark landing screen with a pulsing blood-red title
-  (*The Forbidden Tome*) and an ominous **Enter** button.
-- **The reveal** — pressing **Enter** (or the Enter / Space key) fades away the
-  gate, shakes the screen, and a heavy leather book swings its cover open into a
-  two-page spread.
-- **The incantation** — once open, a creepy passage types itself onto the right
-  page, letter by letter, with a blood-red cursor.
-- **Atmosphere** — drifting fog, floating dust motes, candle-like flicker, a
-  vignette, a blinking/roving eye on the cover, and cursor-reactive parallax.
-- **Ambient sound** — an uneasy low drone with distant wind, generated live with
-  the Web Audio API (no audio files needed). Toggle it with the speaker button
-  in the top-right corner.
+- **The gate** — a moonlit landing screen with a full moon, drifting fog, and an
+  ornate **The Strays** title set in Victorian display type, framed by gold
+  filigree flourishes.
+- **The reveal** — pressing **Enter** (or the Enter / Space key) fades the gate,
+  and a gilt-bound book swings its cover open into a two-page spread. A lone
+  **werewolf howl** greets you as it opens.
+- **The passage** — a Victorian passage types itself onto the right page, letter
+  by letter, tipped with a gold fleuron caret.
+- **Full moon & fog** — a real, wind-blown fog is drawn on a `<canvas>` and
+  drifts across the moon and the open pages. A soft-glowing full moon hangs in a
+  starry night sky.
+- **Sound** — everything is generated live with the Web Audio API (no audio
+  files):
+  - **Howl** — a synthesized werewolf howl (pitch swell, vibrato, vowel formant,
+    breath, and a canyon echo). Plays on entry and via the **Howl** button.
+  - **Ambience** — an uneasy night drone with gusting wind, toggled from the nav.
+
+## Navigation
+
+A Victorian top bar carries the controls (**Howl**, **Ambience**) flanked by
+mirrored gold filigree flourishes and a central fleuron.
 
 ## Running it
 
-No build step and no dependencies. Just open `index.html` in any modern browser:
+No build step and no dependencies. Open `index.html` in any modern browser:
 
 ```
 # from the project directory
@@ -28,15 +38,17 @@ python3 -m http.server 8000
 # then visit http://localhost:8000
 ```
 
-Or simply double-click `index.html`.
+Or simply double-click `index.html`. (Browsers require a click before audio can
+start — the **Enter** button provides that gesture.)
 
 ## Files
 
-| File         | Purpose                                             |
-|--------------|-----------------------------------------------------|
-| `index.html` | Markup for the gate, the book, and ambient overlays |
-| `styles.css` | All styling, 3D book layout, and animations         |
-| `script.js`  | Entry sequence, typewriter effect, and Web Audio    |
+| File         | Purpose                                                     |
+|--------------|-------------------------------------------------------------|
+| `index.html` | Markup for the night sky, moon, nav, gate, and the book     |
+| `styles.css` | Victorian styling, the 3D book, moon, and animations        |
+| `script.js`  | Canvas fog, Web Audio howl + ambience, entry & typewriter   |
 
-Fonts (*Nosifer*, *IM Fell English*) are loaded from Google Fonts with serif
-fallbacks, so the site still works fully offline.
+Fonts (*Cinzel Decorative*, *Playfair Display*, *Cormorant Garamond*,
+*IM Fell English*) load from Google Fonts with serif fallbacks, so the site
+still works fully offline.
