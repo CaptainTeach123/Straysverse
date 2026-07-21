@@ -182,7 +182,7 @@
         setTimeout(tick, jitter);
       } else {
         incantEl.classList.add("done");
-        whisperEl.classList.add("show");
+        if (whisperEl) whisperEl.classList.add("show");
         if (beginBtn) setTimeout(() => beginBtn.classList.add("show"), 500);
       }
     })();
