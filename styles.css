@@ -203,6 +203,12 @@ html, body {
   background: repeating-linear-gradient(90deg, rgba(90,60,25,0.05) 0 1px, transparent 1px 3px);
   opacity: 0.5; pointer-events: none;
 }
+/* Photographed inside spread: right half (aged parchment) on the right page */
+.right-page .page-sheet {
+  background: #cbbb90 url("assets/bookspread.jpg") right center / 200% 100% no-repeat;
+}
+.right-page .page-sheet::before,
+.right-page .page-sheet::after { content: none; }
 
 /* Left page */
 .left-page {
@@ -339,12 +345,12 @@ html, body {
   0%, 62% { background-position: 130% 0; }
   85%, 100% { background-position: -30% 0; }
 }
+/* Photographed inside spread: left half (leather inside cover) shows when
+   the front cover flips open onto the left */
 .cover-back {
   transform: rotateY(180deg);
-  background:
-    repeating-linear-gradient(85deg, rgba(0,0,0,0.05) 0 3px, transparent 3px 7px),
-    linear-gradient(135deg, #26190d 0%, #100904 100%);
-  box-shadow: inset 0 0 60px rgba(0,0,0,0.8);
+  background: #0d0906 url("assets/bookspread.jpg") left center / 200% 100% no-repeat;
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.6);
 }
 
 /* entry shake */
