@@ -45,7 +45,7 @@
 
   function makePuffs() {
     puffs.length = 0;
-    const count = W < 700 ? 20 : 34;
+    const count = W < 700 ? 24 : 40;
     for (let i = 0; i < count; i++) {
       const depth = rnd();               // 0 = distant/slow, 1 = near/fast
       puffs.push({
@@ -55,7 +55,7 @@
         speed: 0.28 + depth * 1.25,       // wind blows to the right
         sway: 0.4 + rnd() * 0.9,
         phase: rnd() * Math.PI * 2,
-        alpha: 0.06 + (1 - depth) * 0.09, // distant fog reads a touch denser
+        alpha: 0.1 + (1 - depth) * 0.14,  // distant fog reads a touch denser
         tint: rnd(),
       });
     }
@@ -187,8 +187,6 @@
 
     gate.classList.add("hidden");
     stage.classList.add("revealed");
-    document.body.classList.add("shake");
-    setTimeout(() => document.body.classList.remove("shake"), 600);
 
     setTimeout(() => book.classList.add("open"), 1200);
 
@@ -202,11 +200,16 @@
     else if (entered && (e.key === "h" || e.key === "H")) { playHowl(); }
   });
 
-  /* ================= Cursor parallax ================= */
+  /* ================= Cursor parallax (rAF-throttled for smoothness) ======= */
+  let parX = 0, parY = 0, parPending = false;
+  function applyParallax() {
+    parPending = false;
+    stage.style.transform = "rotateX(" + (-parY) + "deg) rotateY(" + parX + "deg)";
+  }
   window.addEventListener("mousemove", function (e) {
     if (!entered) return;
-    const dx = (e.clientX / window.innerWidth - 0.5) * 6;
-    const dy = (e.clientY / window.innerHeight - 0.5) * 4;
-    stage.style.transform = "rotateX(" + (-dy) + "deg) rotateY(" + dx + "deg)";
+    parX = (e.clientX / window.innerWidth - 0.5) * 6;
+    parY = (e.clientY / window.innerHeight - 0.5) * 4;
+    if (!parPending) { parPending = true; requestAnimationFrame(applyParallax); }
   });
 })();
