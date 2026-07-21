@@ -98,11 +98,12 @@ html, body {
   margin-bottom: 0.8rem;
 }
 .gate-title {
-  font-family: 'Cinzel Decorative', 'Playfair Display', serif;
-  font-weight: 900;
-  font-size: clamp(2.6rem, 8.5vw, 6rem);
+  font-family: 'IM Fell English', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(3rem, 10vw, 6.8rem);
   color: #e7daba;
-  letter-spacing: 4px;
+  letter-spacing: 1px;
   line-height: 1.05;
   text-shadow:
     0 1px 0 rgba(255,248,228,0.22),
@@ -120,24 +121,26 @@ html, body {
   width: min(70vw, 260px); height: 36px; margin: 1rem auto 0.4rem;
   display: block;
 }
+/* per-letter unevenness for a hand-inked title */
+.gate-title .ltr { display: inline-block; }
 .gate-sub {
   margin: 0.6rem 0 2.4rem;
-  font-family: 'Playfair Display', serif;
+  font-family: 'IM Fell English', 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: clamp(1rem, 2.4vw, 1.4rem);
+  font-size: clamp(1.05rem, 2.5vw, 1.5rem);
   color: #b9a877;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 .enter-btn {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 700;
-  font-size: clamp(0.85rem, 1.8vw, 1.05rem);
-  letter-spacing: 5px;
-  text-transform: uppercase;
+  font-family: 'IM Fell English', 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  letter-spacing: 2px;
   color: var(--cream);
   background: linear-gradient(180deg, rgba(40,30,16,0.5), rgba(20,14,8,0.5));
   border: 1px solid var(--gold-deep);
-  padding: 0.85rem 3rem;
+  padding: 0.6rem 2.6rem 0.7rem;
   cursor: pointer;
   transition: all 0.45s ease;
   position: relative;
@@ -146,7 +149,7 @@ html, body {
   color: #fff;
   border-color: var(--gold-bright);
   box-shadow: 0 0 22px rgba(200,169,90,0.45), inset 0 0 22px rgba(200,169,90,0.18);
-  letter-spacing: 7px;
+  letter-spacing: 3px;
 }
 .gate-warn {
   margin-top: 2.4rem;

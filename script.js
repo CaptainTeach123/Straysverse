@@ -12,6 +12,37 @@
   const incantEl = document.getElementById("incantation");
   const whisperEl = document.querySelector(".whisper");
 
+  // give the title a hand-inked, uneven look (per-letter jitter)
+  (function unevenize() {
+    const el = document.querySelector(".gate-title");
+    if (!el) return;
+    const text = el.textContent;
+    el.textContent = "";
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (ch === " ") { el.appendChild(document.createTextNode(" ")); continue; }
+      const s = document.createElement("span");
+      s.className = "ltr";
+      s.textContent = ch;
+      const rot = ((i * 37) % 9) - 4;   // -4..4 deg
+      const dy = ((i * 53) % 6) - 3;     // -3..2 px
+      s.style.transform = "rotate(" + rot + "deg) translateY(" + dy + "px)";
+      el.appendChild(s);
+    }
+  })();
+
+  // narration for the opening (a deep, rich voice)
+  const narration = new Audio("assets/narration.mp3");
+  narration.preload = "auto";
+  narration.volume = 0.95;
+  function playNarration() {
+    try {
+      narration.currentTime = 0;
+      const p = narration.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch (e) { /* ignore */ }
+  }
+
   // passage as segments so one word can carry its own (bloody) styling
   const passageParts = [
     { text: "When Madness Reigns\nwho will be king... " },
@@ -249,6 +280,9 @@
 
     // hold on the closed werewolf cover so it's clearly seen, THEN open it
     setTimeout(() => book.classList.add("open"), 2400);
+
+    // the deep-voiced narration rises as the book falls open
+    setTimeout(playNarration, 2600);
 
     // the passage writes itself once the cover has swung wide
     setTimeout(() => typeParts(passageParts, 26), 4700);
