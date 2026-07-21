@@ -15,7 +15,7 @@
   // passage as segments so one word can carry its own (bloody) styling
   const passageParts = [
     { text: "When Madness Reigns\nwho will be king... " },
-    { text: "you", cls: "blood" },
+    { text: "you", cls: "blood", slow: true },
     { text: "?" }
   ];
 
@@ -160,6 +160,11 @@
   }
   function typeParts(parts, speed) {
     const full = parts.map(p => p.text).join("");
+    function partAt(idx) {
+      let acc = 0;
+      for (const p of parts) { if (idx < acc + p.text.length) return p; acc += p.text.length; }
+      return null;
+    }
     function render(n) {
       let rem = n, html = "";
       for (const p of parts) {
@@ -177,15 +182,51 @@
       if (n <= full.length) {
         render(n);
         const ch = n > 0 ? full[n - 1] : "";
+        const p = n > 0 ? partAt(n - 1) : null;
         n++;
-        const jitter = ch === "\n" ? 170 : speed + Math.abs(((n * 73) % 22) - 11);
+        let jitter;
+        if (ch === "\n") jitter = 170;
+        else if (p && p.slow) jitter = 210 + Math.abs(((n * 57) % 70) - 35); // deliberate
+        else jitter = speed + Math.abs(((n * 73) % 22) - 11);
         setTimeout(tick, jitter);
       } else {
         incantEl.classList.add("done");
         if (whisperEl) whisperEl.classList.add("show");
-        if (beginBtn) setTimeout(() => beginBtn.classList.add("show"), 500);
+        inkUnderlines();
       }
     })();
+  }
+
+  // draw three uneven, hand-drawn blood underlines under "you", one at a time
+  function inkUnderlines() {
+    const blood = incantEl.querySelector(".blood");
+    if (!blood) { if (beginBtn) setTimeout(() => beginBtn.classList.add("show"), 500); return; }
+    const NS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("class", "scratch");
+    svg.setAttribute("viewBox", "0 0 100 22");
+    svg.setAttribute("preserveAspectRatio", "none");
+    const strokes = [
+      "M2,5 C 18,3.4 34,6.8 52,4.6 S 84,6.4 98,5.1",
+      "M2,12 C 22,13.9 41,10.3 60,12.7 S 87,10.8 98,12.3",
+      "M3,19 C 21,17.4 45,20.7 64,18.4 S 90,20.2 97,19.1"
+    ];
+    const paths = strokes.map(d => {
+      const pa = document.createElementNS(NS, "path");
+      pa.setAttribute("d", d);
+      pa.setAttribute("pathLength", "100");
+      svg.appendChild(pa);
+      return pa;
+    });
+    blood.appendChild(svg);
+    const drip = document.createElement("i");
+    drip.className = "drip";
+    blood.appendChild(drip);
+
+    const step = 950;
+    paths.forEach((pa, k) => setTimeout(() => pa.classList.add("draw"), 260 + k * step));
+    setTimeout(() => drip.classList.add("run"), 260 + strokes.length * step);
+    if (beginBtn) setTimeout(() => beginBtn.classList.add("show"), 260 + strokes.length * step + 700);
   }
 
   /* ================= Entry sequence ================= */

@@ -281,31 +281,47 @@ html, body {
     0 0 3px rgba(250,244,224,0.65),
     0 1px 1px rgba(255,250,235,0.5);
 }
-/* the bloody "you" — dark red, struck through with three blood-red lines */
+/* the bloody "you" — dark red, underlined three times by hand, uneven */
 .incantation .blood {
   display: inline-block;
   position: relative;
   color: #7c0a0a;
   font-weight: 600;
-  padding-bottom: 0.7em;
+  padding-bottom: 22px;
   text-shadow: 0 0 5px rgba(150,12,12,0.55), 0 1px 1px rgba(60,0,0,0.6);
-  background-image:
-    linear-gradient(#7a0808, #9a1212),
-    linear-gradient(#7a0808, #9a1212),
-    linear-gradient(#7a0808, #9a1212);
-  background-repeat: no-repeat;
-  background-size: 102% 2.5px, 98% 2.5px, 100% 2.5px;
-  background-position: 0 100%, 0 calc(100% - 6px), 0 calc(100% - 12px);
 }
-/* a small drip of blood from the underlines */
-.incantation .blood::after {
-  content: "";
-  position: absolute; left: 56%; bottom: -2px;
-  width: 3.5px; height: 9px;
+/* the three hand-drawn strokes live in an SVG under the word */
+.incantation .blood .scratch {
+  position: absolute; left: -6%; bottom: 0;
+  width: 112%; height: 22px; overflow: visible;
+  pointer-events: none;
+}
+.incantation .blood .scratch path {
+  fill: none;
+  stroke: #8a0f0f;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 2px rgba(140,12,12,0.5));
+  /* pathLength is normalized to 100 in markup so this reveals the whole stroke */
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+.incantation .blood .scratch path.draw {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.85s cubic-bezier(.55,.05,.35,1);
+}
+/* a small drip appears once the strokes are done */
+.incantation .blood .drip {
+  position: absolute; left: 56%; bottom: 2px;
+  width: 3.5px; height: 0;
   background: linear-gradient(#8a0f0f, #5a0505);
   border-radius: 45% 45% 50% 50% / 25% 25% 75% 75%;
   box-shadow: 0 0 4px rgba(140,12,12,0.6);
+  transition: height 0.7s ease-in, bottom 0.7s ease-in;
 }
+.incantation .blood .drip.run { height: 11px; bottom: -9px; }
 .whisper {
   margin-top: 1.8rem;
   font-family: 'Playfair Display', serif;
