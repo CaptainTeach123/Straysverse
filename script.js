@@ -189,7 +189,7 @@
   function esc(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
-  const NARR_FALLBACK = 11.1;     // used only if the clip's real duration is unavailable
+  const NARR_FALLBACK = 8.85;     // used only if the clip's real duration is unavailable
   const STROKE = 0.85;           // seconds a single underline takes to draw
   const STAG = 0.62;             // gap between the three strokes
   let seqStart = 0;              // wall-clock start of the narration+typing (ms)
