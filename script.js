@@ -12,9 +12,12 @@
   const incantEl = document.getElementById("incantation");
   const whisperEl = document.querySelector(".whisper");
 
-  const passage =
-    "When the pale lantern swells,\n" +
-    "the old blood stirs.";
+  // passage as segments so one word can carry its own (bloody) styling
+  const passageParts = [
+    { text: "When Madness Reigns\nwho will be king... " },
+    { text: "you", cls: "blood" },
+    { text: "?" }
+  ];
 
   /* ================= Fog canvas ================= */
   const fogCanvas = document.getElementById("fog");
@@ -151,18 +154,36 @@
   }
 
   /* ================= Typewriter ================= */
-  function typePassage(text, speed) {
-    let i = 0;
-    incantEl.textContent = "";
+  const beginBtn = document.getElementById("beginBtn");
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function typeParts(parts, speed) {
+    const full = parts.map(p => p.text).join("");
+    function render(n) {
+      let rem = n, html = "";
+      for (const p of parts) {
+        if (rem <= 0) break;
+        const take = Math.min(p.text.length, rem);
+        const shown = esc(p.text.slice(0, take));
+        html += p.cls ? '<span class="' + p.cls + '">' + shown + "</span>" : shown;
+        rem -= take;
+      }
+      incantEl.innerHTML = html;
+    }
+    let n = 0;
+    incantEl.innerHTML = "";
     (function tick() {
-      if (i <= text.length) {
-        incantEl.textContent = text.slice(0, i);
-        i++;
-        const jitter = text[i - 1] === "\n" ? 360 : speed + Math.abs(((i * 73) % 40) - 20);
+      if (n <= full.length) {
+        render(n);
+        const ch = n > 0 ? full[n - 1] : "";
+        n++;
+        const jitter = ch === "\n" ? 170 : speed + Math.abs(((n * 73) % 22) - 11);
         setTimeout(tick, jitter);
       } else {
         incantEl.classList.add("done");
         whisperEl.classList.add("show");
+        if (beginBtn) setTimeout(() => beginBtn.classList.add("show"), 500);
       }
     })();
   }
@@ -189,7 +210,7 @@
     setTimeout(() => book.classList.add("open"), 2400);
 
     // the passage writes itself once the cover has swung wide
-    setTimeout(() => typePassage(passage, 55), 4700);
+    setTimeout(() => typeParts(passageParts, 26), 4700);
   }
 
   enterBtn.addEventListener("click", enter);

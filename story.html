@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Strays — The History of Redding</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* story page allows scrolling (index.html is locked) */
+    html, body.story-page { overflow-y: auto; height: auto; min-height: 100%; }
+    .night-sky { background-attachment: fixed; }
+
+    .story-back {
+      position: fixed; top: 18px; left: 20px; z-index: 60;
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 1rem; letter-spacing: 1px;
+      color: var(--gold); text-decoration: none; opacity: 0.75;
+      transition: opacity 0.3s ease, color 0.3s ease;
+    }
+    .story-back:hover { opacity: 1; color: var(--gold-bright); }
+
+    .story {
+      position: relative; z-index: 10;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: clamp(4rem, 12vh, 9rem) clamp(1.4rem, 5vw, 3rem) 6rem;
+      text-align: center;
+    }
+    .story-eyebrow {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+      letter-spacing: 5px; text-transform: uppercase;
+      color: var(--gold); opacity: 0.85; margin-bottom: 1.4rem;
+    }
+    .story-chapter {
+      font-family: 'Cinzel Decorative', serif; font-weight: 900;
+      font-size: clamp(1.8rem, 5.5vw, 3rem);
+      color: #ece0be; letter-spacing: 2px;
+      text-shadow: 0 0 22px rgba(220,230,245,0.25), 0 2px 4px rgba(0,0,0,0.9);
+    }
+    .story-title {
+      font-family: 'Playfair Display', serif; font-style: italic; font-weight: 500;
+      font-size: clamp(1.1rem, 2.6vw, 1.5rem);
+      color: #b9a877; margin: 0.6rem 0 0.4rem;
+    }
+    .story-rule {
+      width: min(60%, 220px); height: 1px; margin: 1.8rem auto 2.6rem;
+      background: linear-gradient(90deg, transparent, rgba(200,169,90,0.6), transparent);
+    }
+    .story-body {
+      text-align: left;
+      font-family: 'Cormorant Garamond', 'IM Fell English', serif;
+      font-size: clamp(1.15rem, 2.1vw, 1.4rem);
+      line-height: 1.9;
+      color: #d8c9a3;
+    }
+    .story-body p { margin-bottom: 1.5rem; text-shadow: 0 1px 2px rgba(0,0,0,0.7); }
+    .story-body p:first-child::first-letter {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 3.2em; line-height: 0.8; float: left;
+      padding: 0.05em 0.12em 0 0; color: var(--gold);
+      text-shadow: 0 0 14px rgba(200,169,90,0.4);
+    }
+    .story-end {
+      margin-top: 3rem; text-align: center;
+      font-family: 'IM Fell English', serif; font-style: italic;
+      color: #7d6f4e; font-size: 1rem; letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body class="story-page">
+  <div class="night-sky"></div>
+  <div class="vignette"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <a class="story-back" href="index.html">&#8592; the cover</a>
+
+  <main class="story">
+    <p class="story-eyebrow">The History of Redding</p>
+    <h1 class="story-chapter">Chapter One</h1>
+    <p class="story-title">The Coming of the Moon</p>
+    <div class="story-rule"></div>
+
+    <!-- Placeholder opening — replace with the real chapter. -->
+    <div class="story-body">
+      <p>They will tell you Redding was always a quiet town, and they will be
+        lying to keep you calm. The quiet came later, after the woods were
+        cut back and the lamps were lit along the high road &mdash; a quiet
+        bought dearly, and paid for still.</p>
+      <p>Before the lamps there was only the moon, and the moon has a long
+        memory. On the nights it swelled full over the moor, the old
+        families locked their doors and pretended not to hear what moved
+        between the pines. They called them strays &mdash; the wanderers, the
+        moon-touched &mdash; as though a gentler word might make them gentler
+        things.</p>
+      <p>It did not. And this is where their history begins.</p>
+    </div>
+
+    <p class="story-end">&#10086; &nbsp; to be continued &nbsp; &#10087;</p>
+  </main>
+</body>
+</html>
