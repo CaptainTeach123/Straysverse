@@ -1,0 +1,443 @@
+/* ===========================================================
+   The Forbidden Tome — creepy book that opens on entry
+   =========================================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink: #d8c9a0;
+  --blood: #6e0d0d;
+  --parchment: #cabb90;
+  --parchment-dark: #b0a074;
+  --leather: #2a1810;
+  --leather-dark: #160c07;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at center, #14100c 0%, #060403 70%, #000 100%);
+  font-family: 'IM Fell English', Georgia, serif;
+  color: var(--ink);
+  cursor: default;
+}
+
+/* ---------- Ambient overlays ---------- */
+
+.vignette {
+  position: fixed; inset: 0; pointer-events: none; z-index: 40;
+  background: radial-gradient(ellipse at center, transparent 42%, rgba(0,0,0,0.45) 80%, rgba(0,0,0,0.9) 100%);
+}
+
+.fog {
+  position: fixed; inset: -50%; pointer-events: none; z-index: 5;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(60,50,40,0.10), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(40,30,25,0.12), transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(30,25,20,0.10), transparent 40%);
+  animation: drift 40s ease-in-out infinite alternate;
+  opacity: 0.9;
+}
+@keyframes drift {
+  0%   { transform: translate(0,0) scale(1); }
+  50%  { transform: translate(3%, -2%) scale(1.05); }
+  100% { transform: translate(-2%, 3%) scale(1.1); }
+}
+
+/* floating dust motes */
+.dust {
+  position: fixed; inset: 0; pointer-events: none; z-index: 6;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 20%, rgba(200,180,140,0.5), transparent),
+    radial-gradient(1px 1px at 30% 70%, rgba(200,180,140,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 55% 40%, rgba(200,180,140,0.35), transparent),
+    radial-gradient(1px 1px at 75% 80%, rgba(200,180,140,0.45), transparent),
+    radial-gradient(1px 1px at 88% 25%, rgba(200,180,140,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 45% 90%, rgba(200,180,140,0.3), transparent);
+  animation: float-dust 22s linear infinite;
+  opacity: 0.6;
+}
+@keyframes float-dust {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-40px); }
+}
+
+/* candle-like flicker */
+.flicker {
+  position: fixed; inset: 0; pointer-events: none; z-index: 41;
+  background: radial-gradient(ellipse at 50% 45%, rgba(255,170,80,0.05), transparent 60%);
+  animation: flicker 5s linear infinite;
+  mix-blend-mode: screen;
+}
+@keyframes flicker {
+  0%,100% { opacity: 0.5; }
+  10% { opacity: 0.7; }
+  15% { opacity: 0.35; }
+  22% { opacity: 0.8; }
+  40% { opacity: 0.45; }
+  55% { opacity: 0.75; }
+  70% { opacity: 0.3; }
+  85% { opacity: 0.65; }
+}
+
+/* ---------- Enter gate ---------- */
+
+.gate {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #100b07 0%, #000 100%);
+  transition: opacity 1.6s ease, visibility 1.6s ease;
+}
+.gate.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.gate-inner { text-align: center; padding: 2rem; }
+
+.gate-title {
+  font-family: 'Nosifer', 'IM Fell English', serif;
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  color: var(--blood);
+  letter-spacing: 2px;
+  text-shadow: 0 0 12px rgba(110,13,13,0.8), 0 0 40px rgba(80,0,0,0.5), 2px 2px 3px #000;
+  animation: title-pulse 4s ease-in-out infinite;
+}
+@keyframes title-pulse {
+  0%,100% { text-shadow: 0 0 12px rgba(110,13,13,0.8), 0 0 40px rgba(80,0,0,0.5), 2px 2px 3px #000; }
+  50%     { text-shadow: 0 0 20px rgba(150,20,20,0.9), 0 0 60px rgba(120,0,0,0.7), 2px 2px 3px #000; }
+}
+
+.gate-sub {
+  margin: 1.2rem 0 2.4rem;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-style: italic;
+  color: #9a8b6c;
+  letter-spacing: 1px;
+}
+
+.enter-btn {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.3rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid #5a4a30;
+  padding: 0.8rem 3rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+}
+.enter-btn:hover {
+  color: #fff;
+  border-color: var(--blood);
+  box-shadow: 0 0 20px rgba(110,13,13,0.6), inset 0 0 20px rgba(110,13,13,0.3);
+  letter-spacing: 6px;
+}
+
+.gate-warn {
+  margin-top: 2.5rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #5a4a38;
+  opacity: 0.7;
+  animation: warn-fade 6s ease-in-out infinite;
+}
+@keyframes warn-fade { 0%,100% { opacity: 0.25; } 50% { opacity: 0.75; } }
+
+/* ---------- Stage & book ---------- */
+
+.stage {
+  position: fixed; inset: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  perspective: 2600px;
+  opacity: 0;
+  transition: opacity 1.4s ease 0.4s;
+}
+.stage.revealed { opacity: 1; }
+
+/* .book is sized as ONE page (the right page of the spread) */
+.book {
+  position: relative;
+  width: min(40vw, 400px);
+  height: min(64vh, 640px);
+  transform-style: preserve-3d;
+  transform: rotateX(8deg) scale(0.82);
+  transition: transform 1.8s cubic-bezier(.2,.7,.2,1);
+  filter: drop-shadow(0 40px 55px rgba(0,0,0,0.85));
+}
+/* when open, shift right so the two-page spread is centered */
+.book.open {
+  transform: translateX(50%) rotateX(6deg) scale(0.92);
+}
+@media (max-width: 720px) {
+  .book { width: 64vw; height: 54vh; }
+  .book.open { transform: translateX(50%) rotateX(4deg) scale(0.82); }
+}
+
+/* Common absolutely-positioned layers filling the book box */
+.cover, .page, .left-page, .right-page {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+/* ---------- Aged paper sheet (shared) ---------- */
+.page-sheet {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(255,250,235,0.35), transparent 70%),
+    linear-gradient(135deg, #e9dcbe 0%, #d8c8a0 55%, #c3b085 100%);
+}
+.page-sheet::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(120,85,35,0.28), transparent 22%),
+    radial-gradient(circle at 78% 82%, rgba(90,60,25,0.3), transparent 26%),
+    radial-gradient(circle at 12% 78%, rgba(110,13,13,0.14), transparent 18%),
+    radial-gradient(circle at 88% 30%, rgba(120,90,40,0.22), transparent 20%);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.page-sheet::after { /* subtle fiber texture */
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, rgba(90,60,25,0.05) 0 1px, transparent 1px 3px);
+  opacity: 0.5; pointer-events: none;
+}
+
+/* ---------- Left page (revealed at the spine, folds out to the left) ---------- */
+.left-page {
+  transform-origin: right center;
+  transform: translateX(-100%);
+  border-radius: 4px 1px 1px 4px;
+  overflow: hidden;
+  box-shadow: inset -22px 0 32px rgba(60,40,15,0.35);
+}
+.left-decor {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8%;
+}
+.sigil {
+  font-size: clamp(2.4rem, 9vw, 5rem);
+  color: rgba(110,13,13,0.55);
+  text-shadow: 0 0 14px rgba(110,13,13,0.4);
+  animation: sigil-pulse 5s ease-in-out infinite;
+}
+@keyframes sigil-pulse {
+  0%,100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.06); }
+}
+.left-lines { width: 62%; display: flex; flex-direction: column; gap: 10px; }
+.left-lines span {
+  height: 2px;
+  background: linear-gradient(90deg, rgba(60,40,15,0.4), rgba(60,40,15,0.05));
+}
+.left-lines span:nth-child(4n) { width: 70%; }
+.left-lines span:nth-child(3n) { width: 88%; }
+
+/* ---------- Right page (holds the incantation) ---------- */
+.right-page {
+  border-radius: 1px 4px 4px 1px;
+  overflow: hidden;
+  box-shadow: inset 20px 0 34px rgba(60,40,15,0.35);
+  z-index: 1;
+}
+.page-content {
+  position: absolute; inset: 0;
+  padding: 13% 11%;
+  display: flex; flex-direction: column; justify-content: center;
+  color: #2c1a08;
+}
+.incantation {
+  font-size: clamp(0.82rem, 1.75vw, 1.18rem);
+  line-height: 1.95;
+  font-style: italic;
+  min-height: 1em;
+  white-space: pre-wrap;
+  text-shadow: 0 1px 0 rgba(255,248,225,0.4);
+}
+.incantation::after {
+  content: "▊";
+  animation: caret 1s steps(1) infinite;
+  color: var(--blood);
+}
+.incantation.done::after { content: ""; }
+@keyframes caret { 50% { opacity: 0; } }
+.whisper {
+  margin-top: 2rem;
+  font-size: 0.82rem;
+  text-align: right;
+  color: #6b3a12;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+.whisper.show { opacity: 0.85; }
+
+/* ---------- Turning pages (sit above right page, flip left to reveal it) ---------- */
+.page {
+  transform-origin: left center;
+  transform: rotateY(0deg);
+  border-radius: 1px 4px 4px 1px;
+  transition: transform 1.6s ease;
+}
+.page-face {
+  position: absolute; inset: 0;
+  border-radius: 1px 4px 4px 1px;
+  backface-visibility: hidden;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 12% 50%, rgba(0,0,0,0.2), transparent 55%),
+    linear-gradient(135deg, #e5d6b6 0%, #cbb98f 100%);
+  box-shadow: inset 16px 0 26px rgba(60,40,15,0.28);
+}
+.page-face.back { transform: rotateY(180deg); }
+.page-1 { z-index: 3; }
+.page-2 { z-index: 2; }
+
+.book.open .page-1 { transform: rotateY(-174deg); transition-delay: 0.55s; }
+.book.open .page-2 { transform: rotateY(-171deg); transition-delay: 0.4s; }
+
+/* ---------- Front cover ---------- */
+.cover {
+  transform-origin: left center;
+  transform: rotateY(0deg);
+  transition: transform 1.9s cubic-bezier(.4,.1,.2,1);
+  z-index: 20;
+  border-radius: 2px 8px 8px 2px;
+}
+.book.open .cover { transform: rotateY(-179deg); }
+
+.cover-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: 2px 8px 8px 2px;
+}
+.cover-front {
+  background:
+    linear-gradient(160deg, rgba(58,36,20,0.5) 0%, transparent 40%),
+    repeating-linear-gradient(85deg, rgba(0,0,0,0.06) 0 3px, transparent 3px 7px),
+    linear-gradient(135deg, #3a2414 0%, #1c1008 60%, #0d0704 100%);
+  border-left: 10px solid var(--leather-dark);
+  box-shadow:
+    inset 0 0 60px rgba(0,0,0,0.7),
+    inset 0 0 4px rgba(120,90,50,0.4);
+}
+.cover-back {
+  transform: rotateY(180deg);
+  background:
+    repeating-linear-gradient(85deg, rgba(0,0,0,0.05) 0 3px, transparent 3px 7px),
+    linear-gradient(135deg, #2a1808 0%, #100904 100%);
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.8);
+}
+
+.cover-frame {
+  position: absolute; inset: 8%;
+  border: 2px double #6b4e2a;
+  border-radius: 3px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1.2rem;
+  padding: 6%;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
+}
+
+.cover-emblem {
+  width: clamp(70px, 16vw, 120px);
+  height: clamp(70px, 16vw, 120px);
+  border-radius: 50%;
+  border: 2px solid #6b4e2a;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, #1a0e06 0%, #0a0503 100%);
+  box-shadow: 0 0 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,0,0,0.8);
+}
+
+/* the watching eye */
+.eye {
+  position: relative;
+  width: 74%; height: 42%;
+  background: radial-gradient(ellipse at center, #c9b489 0%, #8a7040 70%, #4a3820 100%);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.7);
+}
+.pupil {
+  position: absolute; top: 50%; left: 50%;
+  width: 40%; height: 78%;
+  background: radial-gradient(circle at 40% 40%, #6e0d0d 0%, #200 80%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(110,13,13,0.8);
+  animation: look 7s ease-in-out infinite;
+}
+@keyframes look {
+  0%,100% { transform: translate(-50%, -50%); }
+  20% { transform: translate(-80%, -50%); }
+  45% { transform: translate(-20%, -50%); }
+  70% { transform: translate(-60%, -40%); }
+}
+.eye-lid {
+  position: absolute; inset: 0;
+  background: linear-gradient(#1a0e06, #1a0e06);
+  transform: scaleY(0);
+  transform-origin: center;
+  animation: blink 6s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(0); }
+  95% { transform: scaleY(1); }
+}
+
+.cover-title {
+  font-family: 'Nosifer', serif;
+  font-size: clamp(1.1rem, 3.2vw, 2rem);
+  color: #7a5c30;
+  letter-spacing: 1px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 1px 0 #000;
+  animation: gold-glow 5s ease-in-out infinite;
+}
+@keyframes gold-glow {
+  0%,100% { color: #7a5c30; text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 1px 0 #000; }
+  50%     { color: #a8814a; text-shadow: 0 0 16px rgba(150,110,50,0.5), 0 1px 0 #000; }
+}
+.cover-sub {
+  font-style: italic;
+  font-size: clamp(0.7rem, 1.8vw, 1rem);
+  color: #6b4e2a;
+  letter-spacing: 2px;
+}
+.cover-runes {
+  font-size: clamp(0.9rem, 2.4vw, 1.5rem);
+  color: #6b4e2a;
+  letter-spacing: 4px;
+  opacity: 0.8;
+}
+
+/* ---------- Sound toggle ---------- */
+.sound-toggle {
+  position: fixed; top: 18px; right: 18px; z-index: 60;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid #4a3a24;
+  background: rgba(10,6,3,0.6);
+  color: var(--ink);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+}
+.sound-toggle:hover { border-color: var(--blood); box-shadow: 0 0 14px rgba(110,13,13,0.5); }
+
+/* subtle screen shake used on entry */
+.shake { animation: shake 0.6s ease; }
+@keyframes shake {
+  0%,100% { transform: translate(0,0); }
+  20% { transform: translate(-3px, 2px); }
+  40% { transform: translate(3px, -2px); }
+  60% { transform: translate(-2px, -3px); }
+  80% { transform: translate(2px, 3px); }
+}

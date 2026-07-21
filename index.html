@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Forbidden Tome</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Nosifer&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Ambient overlays -->
+  <div class="vignette"></div>
+  <div class="fog"></div>
+  <div class="dust"></div>
+  <div class="flicker"></div>
+
+  <!-- Sound toggle -->
+  <button id="soundToggle" class="sound-toggle" aria-label="Toggle ambient sound" title="Toggle ambient sound">
+    <span class="sound-icon">🔇</span>
+  </button>
+
+  <!-- Enter gate -->
+  <div id="gate" class="gate">
+    <div class="gate-inner">
+      <h1 class="gate-title">The Forbidden Tome</h1>
+      <p class="gate-sub">Some books were never meant to be opened.</p>
+      <button id="enterBtn" class="enter-btn">Enter</button>
+      <p class="gate-warn">Turn back while you still can&hellip;</p>
+    </div>
+  </div>
+
+  <!-- The book -->
+  <div class="stage" id="stage">
+    <div class="book" id="book">
+      <!-- Left page of the spread (revealed when open) -->
+      <div class="left-page">
+        <div class="page-sheet">
+          <div class="left-decor">
+            <div class="sigil">&#10021;</div>
+            <div class="left-lines">
+              <span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right page: the incantation is revealed here -->
+      <div class="right-page">
+        <div class="page-sheet">
+          <div class="page-content">
+            <p class="incantation" id="incantation"></p>
+            <p class="whisper">&mdash; written in something darker than ink</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Turning pages (flip away to reveal the right page) -->
+      <div class="page page-2"><div class="page-face front"></div><div class="page-face back"></div></div>
+      <div class="page page-1"><div class="page-face front"></div><div class="page-face back"></div></div>
+
+      <!-- Front cover -->
+      <div class="cover" id="cover">
+        <div class="cover-face cover-front">
+          <div class="cover-frame">
+            <div class="cover-emblem">
+              <div class="eye">
+                <div class="eye-lid"></div>
+                <div class="pupil"></div>
+              </div>
+            </div>
+            <h2 class="cover-title">Necronomicon</h2>
+            <p class="cover-sub">of the Sleepless Dark</p>
+            <div class="cover-runes">&#10022; &#10038; &#9763; &#10038; &#10022;</div>
+          </div>
+        </div>
+        <div class="cover-face cover-back"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
