@@ -13,62 +13,8 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Night sky + moon behind everything -->
+  <!-- Moon-over-forest backdrop -->
   <div class="night-sky"></div>
-  <div class="moon" aria-hidden="true">
-    <div class="moon-glow"></div>
-    <div class="moon-face"></div>
-  </div>
-
-  <!-- Forest treeline silhouetted against the moon -->
-  <svg class="treeline" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
-    <defs>
-      <path id="fir" d="M0,-122 L13,-88 L6,-88 L19,-56 L9,-56 L27,-20 L5,-20 L5,0 L-5,0 L-5,-20 L-27,-20 L-9,-56 L-19,-56 L-6,-88 L-13,-88 Z" />
-    </defs>
-    <g class="tree-fill">
-      <use href="#fir" transform="translate(40,300) scale(1.0)" />
-      <use href="#fir" transform="translate(96,300) scale(0.68)" />
-      <use href="#fir" transform="translate(150,300) scale(1.28)" />
-      <use href="#fir" transform="translate(214,300) scale(0.86)" />
-      <use href="#fir" transform="translate(276,300) scale(1.02)" />
-      <use href="#fir" transform="translate(330,300) scale(0.64)" />
-      <use href="#fir" transform="translate(386,300) scale(1.16)" />
-      <use href="#fir" transform="translate(450,300) scale(0.9)" />
-      <use href="#fir" transform="translate(516,300) scale(1.4)" />
-      <use href="#fir" transform="translate(586,300) scale(0.8)" />
-      <use href="#fir" transform="translate(646,300) scale(1.06)" />
-      <use href="#fir" transform="translate(706,300) scale(0.7)" />
-      <use href="#fir" transform="translate(766,300) scale(1.22)" />
-      <use href="#fir" transform="translate(832,300) scale(0.95)" />
-      <use href="#fir" transform="translate(896,300) scale(1.42)" />
-      <use href="#fir" transform="translate(966,300) scale(0.84)" />
-      <use href="#fir" transform="translate(1026,300) scale(1.1)" />
-      <use href="#fir" transform="translate(1092,300) scale(0.72)" />
-      <use href="#fir" transform="translate(1152,300) scale(1.05)" />
-    </g>
-    <g class="tree-stroke">
-      <g transform="translate(70,300) scale(0.95)">
-        <path d="M0,0 L0,-158" />
-        <path d="M0,-64 L-26,-102 M0,-72 L22,-104" />
-        <path d="M0,-104 L-18,-134 M0,-98 L24,-138" />
-        <path d="M0,-128 L-13,-152 M0,-132 L15,-158" />
-        <path d="M-26,-102 l-12,-18 M22,-104 l14,-16 M-18,-134 l-9,-14 M24,-138 l11,-12" />
-      </g>
-      <g transform="translate(1118,300) scale(1.05)">
-        <path d="M0,0 L0,-150" />
-        <path d="M0,-58 L24,-96 M0,-66 L-20,-98" />
-        <path d="M0,-96 L16,-126 M0,-90 L-22,-130" />
-        <path d="M0,-120 L12,-146 M0,-124 L-14,-150" />
-        <path d="M24,-96 l12,-16 M-20,-98 l-13,-15 M16,-126 l9,-13 M-22,-130 l-10,-12" />
-      </g>
-      <g transform="translate(410,300) scale(0.8)">
-        <path d="M0,0 L0,-132" />
-        <path d="M0,-56 L-20,-88 M0,-62 L18,-90" />
-        <path d="M0,-92 L-14,-118 M0,-86 L18,-120" />
-        <path d="M-20,-88 l-9,-13 M18,-90 l11,-12" />
-      </g>
-    </g>
-  </svg>
 
   <!-- Ambient overlays -->
   <div class="vignette"></div>

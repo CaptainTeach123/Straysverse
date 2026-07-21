@@ -28,71 +28,20 @@ html, body {
   cursor: default;
 }
 
-/* ---------- Night sky & moon ---------- */
+/* ---------- Moon-over-forest backdrop ---------- */
 .night-sky {
   position: fixed; inset: 0; z-index: 1;
   background:
-    radial-gradient(ellipse at 50% 20%, #0c1424 0%, #070b16 30%, #03050c 60%, #010103 100%);
+    #030204 url("assets/moonforest.jpg") center 42% / cover no-repeat;
 }
-.night-sky::after { /* faint stars */
+/* gentle breathing glow so the moon feels alive */
+.night-sky::after {
   content: ""; position: absolute; inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 15% 20%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 65% 12%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 82% 28%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1px 1px at 35% 8%, rgba(255,255,255,0.45), transparent),
-    radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 8% 40%, rgba(255,255,255,0.4), transparent),
-    radial-gradient(1px 1px at 50% 5%, rgba(255,255,255,0.5), transparent);
-  opacity: 0.5;
-  animation: twinkle 6s ease-in-out infinite;
-}
-@keyframes twinkle { 0%,100% { opacity: 0.35; } 50% { opacity: 0.65; } }
-
-.moon {
-  position: fixed; z-index: 2;
-  top: 5vh; left: 50%;
-  width: min(34vw, 340px); height: min(34vw, 340px);
-  transform: translateX(-50%);
-  border-radius: 50%;
-}
-
-/* Forest treeline against the moon */
-.treeline {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 4;
-  width: 100%; height: min(44vh, 440px);
-  pointer-events: none; display: block;
-}
-.treeline .tree-fill { fill: #070504; }
-.treeline .tree-stroke {
-  stroke: #070504; fill: none;
-  stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
-}
-/* the moon backlights the trees with a faint warm rim */
-.treeline { filter: drop-shadow(0 0 6px rgba(120,96,50,0.25)); }
-.moon-glow {
-  position: absolute; inset: -55%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(232,216,168,0.32) 0%, rgba(200,178,120,0.13) 35%, transparent 68%);
+  background: radial-gradient(circle at 50% 34%, rgba(235,220,170,0.12) 0%, transparent 34%);
+  mix-blend-mode: screen;
   animation: moon-breathe 8s ease-in-out infinite;
 }
-@keyframes moon-breathe {
-  0%,100% { opacity: 0.75; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.06); }
-}
-.moon-face {
-  position: absolute; inset: 0;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 60% 65%, rgba(120,100,68,0.40), transparent 30%),
-    radial-gradient(circle at 38% 32%, rgba(120,100,68,0.34), transparent 22%),
-    radial-gradient(circle at 68% 40%, rgba(110,92,60,0.26), transparent 18%),
-    radial-gradient(circle at 45% 60%, rgba(120,100,68,0.28), transparent 16%),
-    radial-gradient(circle at 35% 38%, #ece0b8 0%, #dcca9e 45%, #b6a374 78%, #8f7d56 100%);
-  box-shadow:
-    inset -14px -14px 42px rgba(45,32,14,0.6),
-    inset 8px 8px 30px rgba(255,246,220,0.3);
-}
+@keyframes moon-breathe { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
 
 /* ---------- Ambient overlays ---------- */
 .vignette {
