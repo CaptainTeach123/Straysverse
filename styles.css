@@ -382,12 +382,32 @@ html, body {
   border-radius: 2px 8px 8px 2px;
 }
 .cover-front {
-  background:
-    linear-gradient(160deg, rgba(60,44,24,0.5) 0%, transparent 40%),
-    repeating-linear-gradient(85deg, rgba(0,0,0,0.05) 0 3px, transparent 3px 7px),
-    linear-gradient(135deg, #33261a 0%, #1c130b 60%, #0e0805 100%);
-  border-left: 10px solid var(--leather-dark);
-  box-shadow: inset 0 0 60px rgba(0,0,0,0.7), inset 0 0 4px rgba(150,120,60,0.4);
+  overflow: hidden;
+  background: #0e0805;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.55);
+}
+.cover-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: inherit;
+  display: block;
+}
+/* moving gilt sheen sweeping across the leather */
+.cover-sheen {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(230,200,119,0.14) 47%, rgba(255,240,200,0.22) 50%, rgba(230,200,119,0.14) 53%, transparent 70%);
+  background-size: 260% 100%;
+  background-position: 130% 0;
+  animation: sheen 9s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+@keyframes sheen {
+  0%, 62% { background-position: 130% 0; }
+  85%, 100% { background-position: -30% 0; }
 }
 .cover-back {
   transform: rotateY(180deg);
@@ -396,72 +416,6 @@ html, body {
     linear-gradient(135deg, #26190d 0%, #100904 100%);
   box-shadow: inset 0 0 60px rgba(0,0,0,0.8);
 }
-.cover-frame {
-  position: absolute; inset: 7%;
-  border: 1px solid var(--gold-deep);
-  border-radius: 3px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 1.1rem; padding: 7%;
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
-}
-.cover-frame::before { /* inner gilt line */
-  content: ""; position: absolute; inset: 6px;
-  border: 1px solid rgba(200,169,90,0.35);
-  border-radius: 2px;
-}
-/* gilt corner flourishes */
-.cover-corner {
-  position: absolute; width: 26px; height: 26px;
-  border: 0 solid var(--gold);
-}
-.cover-corner::before, .cover-corner::after {
-  content: ""; position: absolute; background: var(--gold);
-  box-shadow: 0 0 6px rgba(200,169,90,0.5);
-}
-.cover-corner::before { width: 22px; height: 1.5px; }
-.cover-corner::after  { width: 1.5px; height: 22px; }
-.c-tl { top: 10px; left: 10px; }
-.c-tr { top: 10px; right: 10px; }
-.c-tr::before { right: 0; } .c-tr::after { right: 0; }
-.c-bl { bottom: 10px; left: 10px; }
-.c-bl::before { bottom: 0; } .c-bl::after { bottom: 0; }
-.c-br { bottom: 10px; right: 10px; }
-.c-br::before { right: 0; bottom: 0; } .c-br::after { right: 0; bottom: 0; }
-
-.cover-emblem {
-  width: clamp(84px, 22vw, 150px);
-  height: clamp(84px, 22vw, 150px);
-  border-radius: 50%;
-  border: 1px solid var(--gold-deep);
-  display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle, #14100a 0%, #080503 100%);
-  box-shadow: 0 0 20px rgba(0,0,0,0.6), inset 0 0 16px rgba(0,0,0,0.8);
-  overflow: hidden;
-}
-.emblem-art { width: 88%; height: 88%; }
-.emblem-art .wolf, .emblem-art .wolf-hill { filter: drop-shadow(0 0 2px rgba(0,0,0,0.6)); }
-
-.cover-title {
-  font-family: 'Cinzel Decorative', serif;
-  font-weight: 900;
-  font-size: clamp(1.2rem, 3.4vw, 2rem);
-  color: #b89344;
-  letter-spacing: 1px; text-align: center;
-  text-shadow: 0 0 12px rgba(0,0,0,0.9), 0 1px 0 #000;
-  animation: gilt 6s ease-in-out infinite;
-}
-@keyframes gilt {
-  0%,100% { color: #b89344; text-shadow: 0 0 12px rgba(0,0,0,0.9), 0 1px 0 #000; }
-  50%     { color: #e6c877; text-shadow: 0 0 18px rgba(230,200,119,0.5), 0 1px 0 #000; }
-}
-.cover-sub {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-size: clamp(0.72rem, 1.8vw, 1rem);
-  color: #9a7b3a; letter-spacing: 1px; text-align: center;
-}
-.cover-runes { font-size: clamp(0.9rem, 2.4vw, 1.4rem); color: var(--gold-deep); letter-spacing: 6px; }
 
 /* entry shake */
 .shake { animation: shake 0.6s ease; }
