@@ -189,49 +189,48 @@
   function esc(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
-  function typeParts(parts, speed) {
-    const full = parts.map(p => p.text).join("");
-    function partAt(idx) {
-      let acc = 0;
-      for (const p of parts) { if (idx < acc + p.text.length) return p; acc += p.text.length; }
-      return null;
+  const NARR_FALLBACK = 8.1;      // used only if the clip's real duration is unavailable
+  const STROKE = 0.85;           // seconds a single underline takes to draw
+  const STAG = 0.62;             // gap between the three strokes
+  let seqStart = 0;              // wall-clock start of the narration+typing (ms)
+  const elapsed = () => (seqStart ? (performance.now() - seqStart) / 1000 : 0);
+  function atSec(sec, fn) { setTimeout(fn, Math.max(0, (sec - elapsed()) * 1000)); }
+
+  function renderParts(n) {
+    let rem = n, html = "";
+    for (const p of passageParts) {
+      if (rem <= 0) break;
+      const take = Math.min(p.text.length, rem);
+      const shown = esc(p.text.slice(0, take));
+      html += p.cls ? '<span class="' + p.cls + '">' + shown + "</span>" : shown;
+      rem -= take;
     }
-    function render(n) {
-      let rem = n, html = "";
-      for (const p of parts) {
-        if (rem <= 0) break;
-        const take = Math.min(p.text.length, rem);
-        const shown = esc(p.text.slice(0, take));
-        html += p.cls ? '<span class="' + p.cls + '">' + shown + "</span>" : shown;
-        rem -= take;
-      }
-      incantEl.innerHTML = html;
-    }
+    incantEl.innerHTML = html;
+  }
+
+  // type the passage over `totalMs`, so it can be paced to the narration
+  function typePaced(totalMs, onDone) {
+    const len = passageParts.map(p => p.text).join("").length;
+    const per = Math.max(30, totalMs / len);
     let n = 0;
     incantEl.innerHTML = "";
     (function tick() {
-      if (n <= full.length) {
-        render(n);
-        const ch = n > 0 ? full[n - 1] : "";
-        const p = n > 0 ? partAt(n - 1) : null;
+      if (n <= len) {
+        renderParts(n);
         n++;
-        let jitter;
-        if (ch === "\n") jitter = 170;
-        else if (p && p.slow) jitter = 210 + Math.abs(((n * 57) % 70) - 35); // deliberate
-        else jitter = speed + Math.abs(((n * 73) % 22) - 11);
-        setTimeout(tick, jitter);
+        setTimeout(tick, per * (0.78 + ((n * 17) % 44) / 100)); // slight human jitter
       } else {
         incantEl.classList.add("done");
         if (whisperEl) whisperEl.classList.add("show");
-        inkUnderlines();
+        if (onDone) onDone();
       }
     })();
   }
 
-  // draw three uneven, hand-drawn blood underlines under "you", one at a time
-  function inkUnderlines() {
+  // draw three uneven blood underlines under "you"; the third finishes at time D
+  function drawUnderlinesSynced(D) {
     const blood = incantEl.querySelector(".blood");
-    if (!blood) { if (beginBtn) setTimeout(() => beginBtn.classList.add("show"), 500); return; }
+    if (!blood) { if (beginBtn) beginBtn.classList.add("show"); return; }
     const NS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(NS, "svg");
     svg.setAttribute("class", "scratch");
@@ -254,10 +253,30 @@
     drip.className = "drip";
     blood.appendChild(drip);
 
-    const step = 950;
-    paths.forEach((pa, k) => setTimeout(() => pa.classList.add("draw"), 260 + k * step));
-    setTimeout(() => drip.classList.add("run"), 260 + strokes.length * step);
-    if (beginBtn) setTimeout(() => beginBtn.classList.add("show"), 260 + strokes.length * step + 700);
+    // stroke k (0..2) starts so the last one finishes exactly at D
+    paths.forEach((pa, k) => atSec(D - STROKE - (2 - k) * STAG, () => pa.classList.add("draw")));
+    atSec(D - 0.05, () => drip.classList.add("run"));
+    if (beginBtn) atSec(D + 0.6, () => beginBtn.classList.add("show"));
+  }
+
+  // start narration + typing together, timed so the final underline lands at the clip's end
+  function startOpening() {
+    const go = () => {
+      const D = (isFinite(narration.duration) && narration.duration > 0.5)
+        ? narration.duration : NARR_FALLBACK;
+      seqStart = performance.now();
+      playNarration();
+      const firstStroke = D - STROKE - 2 * STAG;        // when strokes begin
+      const typeEnd = Math.max(1.4, firstStroke - 0.35); // finish typing just before
+      typePaced(typeEnd * 1000, () => drawUnderlinesSynced(D));
+    };
+    if (isFinite(narration.duration) && narration.duration > 0.5) go();
+    else {
+      let started = false;
+      const once = () => { if (!started) { started = true; go(); } };
+      narration.addEventListener("loadedmetadata", once, { once: true });
+      setTimeout(once, 500); // fall back to the estimate if metadata never arrives
+    }
   }
 
   /* ================= Entry sequence ================= */
@@ -281,11 +300,9 @@
     // hold on the closed werewolf cover so it's clearly seen, THEN open it
     setTimeout(() => book.classList.add("open"), 2400);
 
-    // the deep-voiced narration rises as the book falls open
-    setTimeout(playNarration, 2600);
-
-    // the passage writes itself once the cover has swung wide
-    setTimeout(() => typeParts(passageParts, 26), 4700);
+    // once the cover is open, narration + typing begin together and are timed
+    // so the final blood underline lands exactly as the clip ends
+    setTimeout(startOpening, 4500);
   }
 
   enterBtn.addEventListener("click", enter);
