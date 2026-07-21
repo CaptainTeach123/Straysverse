@@ -11,9 +11,6 @@
   const book = document.getElementById("book");
   const incantEl = document.getElementById("incantation");
   const whisperEl = document.querySelector(".whisper");
-  const soundToggle = document.getElementById("soundToggle");
-  const soundState = soundToggle.querySelector(".sound-state");
-  const howlBtns = document.querySelectorAll("[data-howl]");
 
   const passage =
     "They call us the Strays — the moon-touched, the wandering.\n" +
@@ -96,172 +93,64 @@
   requestAnimationFrame(drawFog);
 
   /* ================= Audio ================= */
-  let ctx = null;
-  let ambientOn = false;
-  let ambientMaster = null;
-  let ambientNodes = [];
 
-  function ensureCtx() {
-    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (ctx.state === "suspended") ctx.resume();
-    return ctx;
+  // smoothly ramp an <audio> element's volume
+  function fadeTo(audio, target, ms, done) {
+    if (audio._fade) clearInterval(audio._fade);
+    const steps = 30, dt = Math.max(16, ms / steps);
+    const start = audio.volume;
+    const delta = (target - start) / steps;
+    let i = 0;
+    audio._fade = setInterval(function () {
+      i++;
+      let v = start + delta * i;
+      audio.volume = Math.max(0, Math.min(1, v));
+      if (i >= steps) {
+        clearInterval(audio._fade); audio._fade = null;
+        if (done) done();
+      }
+    }, dt);
   }
 
-  /* --- Ambient wind / night drone --- */
-  function startAmbient() {
-    ensureCtx();
-    ambientMaster = ctx.createGain();
-    ambientMaster.gain.value = 0.0001;
-    ambientMaster.connect(ctx.destination);
+  /* --- Breathing ambience (plays on the landing, fades out on entry) --- */
+  const AMBIENCE_LEVEL = 0.55;
+  const ambience = new Audio("assets/ambience.mp3");
+  ambience.loop = true;
+  ambience.preload = "auto";
+  ambience.volume = 0;
+  let ambienceStarted = false;
 
-    [52, 55.5, 78].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = i === 2 ? "triangle" : "sine";
-      osc.frequency.value = freq;
-      const g = ctx.createGain();
-      g.gain.value = i === 2 ? 0.04 : 0.1;
-      const lfo = ctx.createOscillator();
-      lfo.frequency.value = 0.06 + i * 0.025;
-      const lfoGain = ctx.createGain();
-      lfoGain.gain.value = 0.035;
-      lfo.connect(lfoGain); lfoGain.connect(g.gain);
-      osc.connect(g); g.connect(ambientMaster);
-      osc.start(); lfo.start();
-      ambientNodes.push(osc, lfo);
-    });
-
-    // filtered noise = wind over the moor
-    const len = 2 * ctx.sampleRate;
-    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    let s = 99173;
-    for (let i = 0; i < len; i++) {
-      s = (s * 16807) % 2147483647;
-      data[i] = ((s / 2147483647) * 2 - 1) * 0.5;
+  const wakeEvents = ["pointerdown", "mousemove", "touchstart", "keydown"];
+  function startAmbience() {
+    if (ambienceStarted || entered) return;
+    ambienceStarted = true;
+    const p = ambience.play();
+    if (p && typeof p.then === "function") {
+      p.then(function () {
+        fadeTo(ambience, AMBIENCE_LEVEL, 2500);
+        wakeEvents.forEach(ev => window.removeEventListener(ev, startAmbience));
+      }).catch(function () {
+        ambienceStarted = false;   // blocked — let the next gesture try again
+      });
+    } else {
+      fadeTo(ambience, AMBIENCE_LEVEL, 2500);
     }
-    const wind = ctx.createBufferSource();
-    wind.buffer = buf; wind.loop = true;
-    const wf = ctx.createBiquadFilter();
-    wf.type = "lowpass"; wf.frequency.value = 380;
-    const wfLfo = ctx.createOscillator();     // gusts
-    wfLfo.frequency.value = 0.08;
-    const wfLfoGain = ctx.createGain();
-    wfLfoGain.gain.value = 160;
-    wfLfo.connect(wfLfoGain); wfLfoGain.connect(wf.frequency);
-    const wg = ctx.createGain(); wg.gain.value = 0.09;
-    wind.connect(wf); wf.connect(wg); wg.connect(ambientMaster);
-    wind.start(); wfLfo.start();
-    ambientNodes.push(wind, wfLfo);
-
-    ambientMaster.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 3);
-    ambientOn = true;
-    reflectAmbient();
   }
+  // browsers block autoplay, so begin on the visitor's first interaction
+  wakeEvents.forEach(ev => window.addEventListener(ev, startAmbience, { passive: true }));
 
-  function stopAmbient() {
-    if (!ctx || !ambientMaster) return;
-    ambientMaster.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-    const dead = ambientNodes.slice();
-    setTimeout(() => dead.forEach(n => { try { n.stop(); } catch (e) {} }), 800);
-    ambientNodes = [];
-    ambientOn = false;
-    reflectAmbient();
-  }
+  /* --- Werewolf howl (recorded sample) --- */
+  const howlAudio = new Audio("assets/howl.mp3");
+  howlAudio.preload = "auto";
+  howlAudio.volume = 0.9;
 
-  function toggleAmbient() {
-    if (ambientOn) stopAmbient(); else startAmbient();
-  }
-  function reflectAmbient() {
-    soundState.textContent = ambientOn ? "on" : "off";
-    soundToggle.setAttribute("aria-pressed", String(ambientOn));
-  }
-
-  /* --- Werewolf howl (synthesised) --- */
   function playHowl() {
-    ensureCtx();
-    const t = ctx.currentTime;
-    const dur = 2.7;
-
-    const out = ctx.createGain();
-    out.gain.value = 0.0001;
-
-    // canyon echo tail
-    const delay = ctx.createDelay(1.0);
-    delay.delayTime.value = 0.32;
-    const fb = ctx.createGain(); fb.gain.value = 0.32;
-    const echoMix = ctx.createGain(); echoMix.gain.value = 0.45;
-    out.connect(delay); delay.connect(fb); fb.connect(delay); delay.connect(echoMix);
-    out.connect(ctx.destination);
-    echoMix.connect(ctx.destination);
-
-    // vowel formant (the "aa-ooo")
-    const formant = ctx.createBiquadFilter();
-    formant.type = "bandpass"; formant.Q.value = 3.5;
-    formant.frequency.setValueAtTime(720, t);
-    formant.frequency.linearRampToValueAtTime(1050, t + 0.6);
-    formant.frequency.linearRampToValueAtTime(560, t + dur);
-    const tone = ctx.createBiquadFilter();
-    tone.type = "lowpass"; tone.frequency.value = 2600;
-    tone.connect(formant); formant.connect(out);
-
-    // pitch contour: rise, waver, fall — like a real howl
-    function contour(osc, mult) {
-      const f = osc.frequency;
-      f.setValueAtTime(300 * mult, t);
-      f.exponentialRampToValueAtTime(520 * mult, t + 0.45);
-      f.exponentialRampToValueAtTime(500 * mult, t + 1.7);
-      f.exponentialRampToValueAtTime(250 * mult, t + dur);
-    }
-
-    // vibrato
-    const vib = ctx.createOscillator();
-    vib.frequency.value = 5.2;
-    const vibGain = ctx.createGain();
-    vibGain.gain.setValueAtTime(4, t);
-    vibGain.gain.linearRampToValueAtTime(14, t + 1.0);
-    vib.connect(vibGain);
-
-    // detuned sawtooth voices for a rich, throaty tone
-    [{ type: "sawtooth", det: 0, m: 1, g: 0.5 },
-     { type: "sawtooth", det: -7, m: 1, g: 0.34 },
-     { type: "sawtooth", det: 9, m: 1, g: 0.30 },
-     { type: "triangle", det: 0, m: 2, g: 0.14 }].forEach(v => {
-      const osc = ctx.createOscillator();
-      osc.type = v.type;
-      osc.detune.value = v.det;
-      contour(osc, v.m);
-      vibGain.connect(osc.frequency);
-      const g = ctx.createGain(); g.gain.value = v.g;
-      osc.connect(g); g.connect(tone);
-      osc.start(t); osc.stop(t + dur + 0.05);
-    });
-    vib.start(t); vib.stop(t + dur + 0.05);
-
-    // breath at the tail
-    const bl = 0.7 * ctx.sampleRate;
-    const bbuf = ctx.createBuffer(1, bl, ctx.sampleRate);
-    const bd = bbuf.getChannelData(0);
-    let bs = 4242;
-    for (let i = 0; i < bl; i++) { bs = (bs * 16807) % 2147483647; bd[i] = ((bs / 2147483647) * 2 - 1); }
-    const breath = ctx.createBufferSource(); breath.buffer = bbuf;
-    const bf = ctx.createBiquadFilter(); bf.type = "bandpass"; bf.frequency.value = 1100; bf.Q.value = 0.8;
-    const bg = ctx.createGain();
-    bg.gain.setValueAtTime(0.0001, t + dur - 0.9);
-    bg.gain.linearRampToValueAtTime(0.06, t + dur - 0.5);
-    bg.gain.linearRampToValueAtTime(0.0001, t + dur + 0.2);
-    breath.connect(bf); bf.connect(bg); bg.connect(out);
-    breath.start(t + dur - 0.9);
-
-    // overall amplitude envelope
-    out.gain.setValueAtTime(0.0001, t);
-    out.gain.exponentialRampToValueAtTime(0.5, t + 0.28);
-    out.gain.setValueAtTime(0.5, t + 1.7);
-    out.gain.exponentialRampToValueAtTime(0.28, t + dur - 0.2);
-    out.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.35);
+    try {
+      howlAudio.currentTime = 0;
+      const p = howlAudio.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } catch (e) { /* ignore */ }
   }
-
-  soundToggle.addEventListener("click", toggleAmbient);
-  howlBtns.forEach(b => b.addEventListener("click", playHowl));
 
   /* ================= Typewriter ================= */
   function typePassage(text, speed) {
@@ -286,7 +175,11 @@
     if (entered) return;
     entered = true;
 
-    try { startAmbient(); } catch (e) { /* autoplay blocked; toggle manually */ }
+    // the breathing ambience fades away as you cross the threshold
+    if (ambienceStarted) fadeTo(ambience, 0, 1400, function () { ambience.pause(); });
+
+    // a werewolf's howl greets the click
+    try { playHowl(); } catch (e) {}
 
     gate.classList.add("hidden");
     stage.classList.add("revealed");
@@ -295,9 +188,6 @@
 
     setTimeout(() => book.classList.add("open"), 1200);
 
-    // a lone howl greets you as the book falls open
-    setTimeout(() => { try { playHowl(); } catch (e) {} }, 2600);
-
     // the passage writes itself once the cover has swung wide
     setTimeout(() => typePassage(passage, 55), 3400);
   }
@@ -305,6 +195,7 @@
   enterBtn.addEventListener("click", enter);
   document.addEventListener("keydown", function (e) {
     if (!entered && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); enter(); }
+    else if (entered && (e.key === "h" || e.key === "H")) { playHowl(); }
   });
 
   /* ================= Cursor parallax ================= */
