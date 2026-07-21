@@ -55,7 +55,7 @@
         speed: 0.28 + depth * 1.25,       // wind blows to the right
         sway: 0.4 + rnd() * 0.9,
         phase: rnd() * Math.PI * 2,
-        alpha: 0.08 + (1 - depth) * 0.11, // distant fog reads a touch denser
+        alpha: 0.06 + (1 - depth) * 0.09, // distant fog reads a touch denser
         tint: rnd(),
       });
     }
@@ -74,11 +74,12 @@
       }
       const y = p.y + Math.sin(fogTime * p.sway + p.phase) * 22;
       const g = fctx.createRadialGradient(p.x, y, 0, p.x, y, p.r);
-      // moonlit blue-grey fog
-      const b = 150 + Math.floor(p.tint * 40);
-      g.addColorStop(0, "rgba(" + (b + 20) + "," + (b + 25) + "," + (b + 40) + "," + p.alpha + ")");
-      g.addColorStop(0.5, "rgba(" + b + "," + (b + 8) + "," + (b + 24) + "," + (p.alpha * 0.5) + ")");
-      g.addColorStop(1, "rgba(" + b + "," + b + "," + (b + 20) + ",0)");
+      // warm sepia moonlit fog (matches the reference moon)
+      const b = 120 + Math.floor(p.tint * 34);   // warm mid-tone
+      const rC = b + 26, gC = b + 6, bC = b - 34; // red-forward, low blue
+      g.addColorStop(0, "rgba(" + rC + "," + gC + "," + bC + "," + p.alpha + ")");
+      g.addColorStop(0.5, "rgba(" + (rC - 12) + "," + (gC - 8) + "," + (bC - 6) + "," + (p.alpha * 0.5) + ")");
+      g.addColorStop(1, "rgba(" + (rC - 12) + "," + (gC - 8) + "," + Math.max(0, bC - 6) + ",0)");
       fctx.fillStyle = g;
       fctx.beginPath();
       fctx.arc(p.x, y, p.r, 0, Math.PI * 2);
@@ -180,6 +181,9 @@
 
     // a werewolf's howl greets the click
     try { playHowl(); } catch (e) {}
+
+    // drop the fog behind the book so it no longer drifts over the pages
+    fogCanvas.style.zIndex = "5";
 
     gate.classList.add("hidden");
     stage.classList.add("revealed");

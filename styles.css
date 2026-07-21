@@ -59,7 +59,7 @@ html, body {
 .moon-glow {
   position: absolute; inset: -55%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(230,235,245,0.35) 0%, rgba(200,215,240,0.14) 35%, transparent 68%);
+  background: radial-gradient(circle, rgba(232,216,168,0.32) 0%, rgba(200,178,120,0.13) 35%, transparent 68%);
   animation: moon-breathe 8s ease-in-out infinite;
 }
 @keyframes moon-breathe {
@@ -70,14 +70,14 @@ html, body {
   position: absolute; inset: 0;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 60% 65%, rgba(150,160,180,0.35), transparent 30%),
-    radial-gradient(circle at 38% 32%, rgba(150,160,180,0.30), transparent 22%),
-    radial-gradient(circle at 68% 40%, rgba(150,160,180,0.22), transparent 18%),
-    radial-gradient(circle at 45% 60%, rgba(150,160,180,0.25), transparent 16%),
-    radial-gradient(circle at 35% 38%, #f4f1e6 0%, #dfe1dc 45%, #b9bcc2 78%, #9a9ea8 100%);
+    radial-gradient(circle at 60% 65%, rgba(120,100,68,0.40), transparent 30%),
+    radial-gradient(circle at 38% 32%, rgba(120,100,68,0.34), transparent 22%),
+    radial-gradient(circle at 68% 40%, rgba(110,92,60,0.26), transparent 18%),
+    radial-gradient(circle at 45% 60%, rgba(120,100,68,0.28), transparent 16%),
+    radial-gradient(circle at 35% 38%, #ece0b8 0%, #dcca9e 45%, #b6a374 78%, #8f7d56 100%);
   box-shadow:
-    inset -14px -14px 40px rgba(40,50,80,0.55),
-    inset 8px 8px 30px rgba(255,255,255,0.35);
+    inset -14px -14px 42px rgba(45,32,14,0.6),
+    inset 8px 8px 30px rgba(255,246,220,0.3);
 }
 
 /* ---------- Ambient overlays ---------- */
