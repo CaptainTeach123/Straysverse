@@ -281,14 +281,6 @@ html, body {
     0 0 3px rgba(250,244,224,0.65),
     0 1px 1px rgba(255,250,235,0.5);
 }
-.incantation::after {
-  content: "❦";
-  margin-left: 2px;
-  animation: caret 1.1s steps(1) infinite;
-  color: var(--gold-deep);
-}
-.incantation.done::after { content: ""; }
-@keyframes caret { 50% { opacity: 0; } }
 .whisper {
   margin-top: 1.8rem;
   font-family: 'Playfair Display', serif;
